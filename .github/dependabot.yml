@@ -1,0 +1,53 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    # Major versions are planned upgrades done in their own PR (they move in
+    # lockstep with peers, e.g. TypeScript/typescript-eslint, @types/node/Node).
+    # Advisories in any version still fail the nightly audit.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      python:
+        patterns: ["*"]
+
+  # Dependabot's "npm" ecosystem is also the one that updates pnpm lockfiles.
+  - package-ecosystem: npm
+    directory: /web
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    versioning-strategy: increase
+    # Major versions are planned upgrades done in their own PR (they move in
+    # lockstep with peers, e.g. TypeScript/typescript-eslint, @types/node/Node).
+    # Advisories in any version still fail the nightly audit.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+    commit-message:
+      prefix: build
+      include: scope
+    groups:
+      web:
+        patterns: ["*"]
